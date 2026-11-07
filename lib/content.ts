@@ -3,7 +3,7 @@
 export const site = {
   name: "DropLens",
   tagline: "Cek airdrop yang pernah masuk ke wallet EVM atau Solana — lengkap dengan jumlah token, tanggal, dan status claim.",
-  domain: "https://droplens.vercel.app",
+  domain: "https://drop-lens.vercel.app",
   demo: false,
   repo: "https://github.com/heluvaa/drop-lens",
 };
