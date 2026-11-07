@@ -7,3 +7,4 @@ next-env.d.ts
 *.pem
 .DS_Store
 .taste-skill/
+.vercel

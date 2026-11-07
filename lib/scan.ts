@@ -493,6 +493,11 @@ export async function scanAddress(address: string, opts: ScanOptions = {}): Prom
   if (kind === "solana" && !heliusKey) {
     notes.push("Solana tanpa HELIUS_API_KEY: riwayat dibatasi transaksi terbaru dan dijeda agar tidak kena rate limit RPC publik.");
   }
+  if (kind === "solana") {
+    notes.push(
+      "Untuk airdrop Solana yang ketemu lewat akun token, jumlah yang ditampilkan = saldo terkini token itu (angka pasti), dan tanggalnya = penerimaan paling awal yang terbaca. Total yang pernah diterima bisa lebih besar kalau sebagian sudah dijual.",
+    );
+  }
   notes.push("Nilai USD memakai kurs saat scan, bukan harga saat airdrop jatuh — anggap estimasi.");
 
   const report: ScanReport = {

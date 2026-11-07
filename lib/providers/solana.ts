@@ -291,7 +291,9 @@ export async function scanSolana(
     if (!held) continue;
     targetBudget--;
     try {
-      const hist = await rpc<SigInfo[]>(ctx, "getSignaturesForAddress", [held.tokenAccount, { limit: 200 }]);
+      // limit 1000 = maksimum, supaya elemen terakhir benar-benar transaksi paling awal.
+      // Kalau akun tokennya lebih panjang dari ini, yang terbaca masih sebagian.
+      const hist = await rpc<SigInfo[]>(ctx, "getSignaturesForAddress", [held.tokenAccount, { limit: 1000 }]);
       if (!hist.length) continue;
       const first = hist[hist.length - 1];
       const tx = await rpc<TxParsed | null>(ctx, "getTransaction", [
@@ -299,15 +301,11 @@ export async function scanSolana(
         { maxSupportedTransactionVersion: 0, encoding: "jsonParsed" },
       ]).catch(() => null);
       const feePayer = tx?.transaction?.message?.accountKeys?.[0]?.pubkey ?? "";
-      let amount = held.amount;
-      let decimals = held.decimals;
-      if (tx?.meta) {
-        const d = deltasFor(tx, address).find((x) => x.mint === rm.mint && x.delta > 0);
-        if (d) {
-          amount = d.delta;
-          decimals = d.decimals;
-        }
-      }
+      // Jumlah = saldo terkini akun token itu. Ini angka pasti dan bisa diverifikasi,
+      // sedangkan delta transaksi paling awal bisa cuma transfer debu yang MEMBUAT akunnya
+      // (pernah kejadian: 0.02 padahal saldonya 1.638,52) sehingga menyesatkan.
+      const amount = held.amount;
+      const decimals = held.decimals;
       const k = `${rm.mint}:${first.signature}`;
       if (seen.has(k)) continue;
       seen.add(k);
